@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>修改学生成绩</title>
+		<link rel="stylesheet" media="screen" href="css/liziqusang.css">
+		<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		
+		<link rel="stylesheet" type="text/css" href="css/Up.css"/>
+		
+	</head>
+	<body>
+		<div id="app">
+			<h2 align="center">修改学生成绩</h2>
+			<table border="0" cellspacing="0" cellpadding="0" width="400px">
+				<tr><th>学号：</th><td><input type="text" v-model="sno"/></td></tr>
+				<tr><th>课程名称：</th><td><input type="text" v-model="cname"/></td></tr>
+				<tr><th>成绩：</th><td><input type="text" v-model="score"/></td></tr>
+				<tr><td colspan="2" align="center"><input type="button" value="确认修改" @click="up()"/></td></tr>
+			</table>
+		</div>
+		<div id="bei"></div>
+		
+		<!-- particles.js container -->
+		<div id="particles-js" style="display: flex;align-items: center;justify-content: center">
+			<canvas class="particles-js-canvas-el" style="width: 100%; height: 100%;" width="472" height="625"></canvas>
+		</div>
+		
+		<!-- scripts -->
+		<script src="js/login.js"></script>
+		<script src="js/loginApp.js"></script>
+		<script>
+			function changeImg() {
+				let pic = document.getElementById('picture');
+				console.log(pic.src)
+				if (pic.getAttribute("src", 2) == "img/check.png") {
+					pic.src = "img/checked.png"
+				} else {
+					pic.src = "img/check.png"
+				}
+			};
+			
+			let v=new Vue({
+				el:"#app",
+				data:{
+					sno:"",
+					cname:"",
+					score:"",
+					
+				},
+				created:function(){
+					//获取 sessionStorage 的信息，并且将字符串转为对象
+					var stu = JSON.parse(sessionStorage.getItem("stuitem"));
+					this.sno=stu.stuno;
+					this.cname=stu.cname;					
+					this.score=stu.stuscore;
+					
+				},
+				methods:{
+					up(){
+						var pa=new URLSearchParams();
+						pa.append("stuno",this.sno);
+						pa.append("cname",this.cname);
+						pa.append("stuscore",this.score);
+						
+						axios.post("http://localhost:8088/CourseManage/UpStuScore",pa)
+						.then(res=>{
+							console.log(res);
+							if(res.data.up=="OK"){
+								alert("修改成功");
+								location.href="AdminPage.html";
+							}else{
+								alert(res.data.up);
+							}
+						})
+						
+					}
+				}
+			});
+		</script>
+
+	</body>
+</html>

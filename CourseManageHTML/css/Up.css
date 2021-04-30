@@ -1,0 +1,48 @@
+#app{
+				position: absolute;
+				top: 60px;
+				left: 440px;
+				z-index: 10;
+				padding-left: 55px;
+				padding-top: 24px;
+				color: white;
+			}
+			#bei{
+				position: absolute;
+				top: 80px;
+				left: 440px;
+				height: 320px;
+				width: 510px;
+				z-index: 9;
+				background-color: #4B8BF4;
+				opacity: 0.2;
+				border-radius: 20px;
+				/* X偏移 Y偏移 阴影模糊半径 阴影扩展半径 阴影颜色 投影方向（方式） */
+				box-shadow:0px 0px 20px 8px #DCDCDC;
+			}
+			tr{
+				height: 55px;
+			}
+			th{
+				text-align: right;
+				width: 100px;
+			}
+			input[type="text"]{
+				height: 30px;
+				width: 200px;
+				border-radius: 8px;
+				border: 0;
+				opacity: 0.7;
+			}
+			input[type="button"]{
+				font-size: 20px;
+				font-family: "微软雅黑";
+				background-color: dodgerblue;
+				color: white;
+				border: 0;
+				border-radius: 20px;
+				height: 40px;
+				width: 120px;
+				margin-top: 20px;
+				cursor: pointer;
+			}

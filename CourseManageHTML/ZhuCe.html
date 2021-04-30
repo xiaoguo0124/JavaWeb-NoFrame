@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>注册界面</title>
+		<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		
+		<style>
+			body{
+				background-image: url(img/reg_bg_min.jpg);
+				background-size: cover;
+			}
+			#app{
+				width: 400px;
+				height: 480px;			
+				margin-left: 20px;
+				border: 0;
+				border-radius: 16px;
+				background-color: #F0F0F0;
+				position: absolute;
+				right: 180px;
+				top: 80px;
+				opacity: 0.7;
+			}
+			h2{
+				font-size: 32px;
+				height: 25px;
+				padding-top: 10px;
+				margin-left: 38px;
+			}
+			span{
+				margin-left: 38px;
+			}
+			ul{
+				margin-top: 30px;
+			}
+			li{
+				list-style: none;
+				margin-bottom: 20px;
+			}
+			input{
+				height: 25px;
+				width: 240px;
+				margin-top: 5px;
+			}
+			input[type="button"]{
+				font-size: 24px;
+				font-family: "楷体";
+				color: #FFFFFF;
+				height: 40px;
+				width: 300px;
+				margin-top: 20px;
+				margin-left: 40px;
+				border-radius: 20px;
+				background-color: #0A5FF0;
+				border: none;
+				cursor: pointer;
+			}
+			
+			img{
+				margin-top: 60px;
+				margin-left: 80px;
+				height: 150px;
+				width: 150px;
+				opacity: 0.4;
+			}
+			#p2{
+				height: 50px;
+				margin-bottom: 0;
+				font-size: 50px;
+				font-weight: 700;
+				color: white;
+				margin-left: 200px;
+				margin-top: 150px;
+				opacity: 0.8;
+			}
+			#p3{
+				font-size: 25px;
+				color: white;
+				margin-left: 200px;
+				opacity: 0.8;
+			}
+		</style>
+		
+	</head>
+	<body>
+		<div id="app">
+			<h2>欢迎注册</h2>
+			<span>已有账号？</span><a href="Login.html">登录</a>
+			<ul>
+				用户名<li><input type="text" v-model="user" placeholder="请输入用户名"/></li>
+				密码<li><input type="password" v-model="upwd1" placeholder="请输入密码"/></li>
+				确认密码<li><input type="password" v-model="upwd2" placeholder="请再次密码"/></li>
+			</ul>
+			<input type="button" value="注  册" @click="ZhuCe()"/>
+		</div>
+		<div id="left">
+			<img src="img/timg.jpg" />
+			<p id="p2">用科技</p>
+			<p id="p3">让复杂的世界更简单</p>
+		</div>
+		
+		<script type="text/javascript">
+			var va=new Vue({
+				el:"#app",
+				data:{
+					user:"",
+					upwd1:"",
+					upwd2:""
+				},
+				methods:{
+					ZhuCe(){
+						
+						if (this.upwd2!="" && this.user!="" && this.upwd1!="") {
+							if(this.upwd1==this.upwd2 ){
+								var pwd=this.upwd1;
+								var da=new URLSearchParams();
+								
+								da.append("user",this.user);
+								da.append("upwd",pwd);
+								axios.post("http://localhost:8088/CourseManage/AddStuUser",da)
+								.then(res=>{
+									console.log(res);
+									if(res.data.zhuce=="OK"){
+										alert("注册成功");
+										location.href="Login.html";
+									}else{
+										alert("注册失败");
+									}
+								})
+							}else{
+								alert("密码不一致，请重新输入");
+							}
+						} else{
+							alert("不能有空值。");
+						}
+						
+					}
+				}
+			})
+		</script>
+		
+		
+	</body>
+</html>

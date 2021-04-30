@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>学生成绩</title>
+		<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		
+	</head>
+	<body>
+		<h2>学生成绩</h2>
+		
+		<div id="app">
+			<div id="top">
+				<h2>学生成绩浏览</h2>
+				学号：<input v-model="sno" />
+				课程名称：<input v-model="cname" />
+				成绩：<input v-model="score" />
+				<input type="button" value="查询" @click="seach()" />
+			</div>
+			
+			<table border="1" cellpadding="0" cellspacing="0" width="800px" align="center">
+				<tr>
+					<th>学号</th><th>课程名称</th><th>成绩</th><th>操作</th>
+				</tr>
+				<tr v-for="value in datas">
+					<td>{{value.stuno}}</td>
+					<td>{{value.cname}}</td>
+					<td>{{value.stuscore}}</td>
+					
+					<td>
+						<input type="button" value="删除" @click="del(value.stuno,value.cname,value.stuscore)"/>
+						<input type="button" value="修改" @click="updata(value.stuno,value.cname,value.stuscore)" />
+					</td>
+				</tr>
+				<tr>
+					<td><input v-model="addsno"/></td>
+					<td><input v-model="addcname"/></td>
+					<td><input v-model="addscore"/></td>
+					<td><input type="button" value="添加" @click="add()"/></td>
+				</tr>
+			</table>
+			
+			
+		</div>
+		
+		<script type="text/javascript">
+			let v=new Vue({
+				el:"#app",
+				data:{
+					sno:"",
+					cname:"",
+					score:"",				
+					datas:[],
+					addsno:"",
+					addcname:"",
+					addscore:""
+				},
+				created:function(){
+					axios.post("http://localhost:8088/CourseManage/GetAllStuScore")
+					.then(res=>{
+						//console.log(res);
+						this.datas=res.data;
+					})
+				},
+				methods:{
+					seach(){//查询
+						//建传参的对象
+						let pa=new URLSearchParams();
+						pa.append("stuno",this.sno);
+						pa.append("cname",this.cname);
+						pa.append("stuscore",this.score);
+						
+						axios.post("http://localhost:8088/CourseManage/SeachStuScore",pa)
+						.then(res=>{
+							//console.log(res);
+							this.datas=res.data;
+						})
+					},
+					
+					del(sno,name,score){//删除
+						if(confirm("你确定要删除吗？")){
+							var pa=new URLSearchParams();
+							
+							pa.append("stuno",sno);
+							pa.append("cname",name);
+							pa.append("stuscore",score);
+							
+							axios.post("http://localhost:8088/CourseManage/DelStuScore",pa)
+							.then(res=>{
+								console.log(res);
+								alert(res.data.del);
+								axios.post("http://localhost:8088/CourseManage/GetAllStuScore")
+								.then(res=>{
+									//console.log(res);
+									this.datas=res.data;
+								})								
+							})
+						}else{
+							alert("删除已取消。");
+						}
+					},
+					
+					add(){
+						var pa=new URLSearchParams();
+						
+						pa.append("stuno",this.addsno);
+						pa.append("cname",this.addcname);
+						pa.append("stuscore",this.addscore);
+						
+						axios.post("http://localhost:8088/CourseManage/AddStuScore",pa)
+						.then(res=>{
+							//console.log(res.data);
+							//alert(res.data.add);
+							axios.post("http://localhost:8088/CourseManage/GetAllStuScore")
+							.then(res=>{
+								this.datas=res.data;
+								this.addsno="",
+								this.addcname="",
+								this.addscore=""
+							})
+						})
+					},
+					
+					updata(no,name,score){
+						var upstu={
+							//"属性":值
+							"stuno":no,
+							"cname":name,
+							"stuscore":score,
+						};
+						//在页面之间传值， 吧信息存入 sessionStorage 的对象stuitem 中
+						sessionStorage.setItem("stuitem",JSON.stringify(upstu));
+						location.href="UpStuScore.html";
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

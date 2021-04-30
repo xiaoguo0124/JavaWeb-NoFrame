@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>课程信息</title>
+		<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		
+	</head>
+	<body>
+		<div id="app">
+			<div id="top">
+				<h2>课程信息浏览</h2>
+				<h3>学生用户</h3>
+				课程编号：<input v-model="scno" />
+				课程名称：<input v-model="scname" />
+				教师编号：<input v-model="stno" />
+				<input type="button" value="查询" @click="seach()" />
+			</div>
+			
+			<table border="1" cellpadding="0" cellspacing="0" width="800px" align="center">
+				<tr>
+					<th>课程编号</th><th>课程名称</th><th>教师编号</th><th>操作</th>
+				</tr>
+				<tr v-for="value in datas">
+					<td>{{value.cno}}</td>
+					<td>{{value.cname}}</td>
+					<td>{{value.tno}}</td>
+					
+					<td>
+						<input type="button" value="删除" @click="del(value.cno)"/>
+						<input type="button" value="修改" @click="updata(value.cno,value.cname,value.tno)" />
+					</td>
+				</tr>
+				<tr>
+					<td><input v-model="addcno"/></td>
+					<td><input v-model="addcname"/></td>
+					<td><input v-model="addtno"/></td>
+					<td><input type="button" value="添加" @click="add()"/></td>
+				</tr>
+			</table>
+			
+			
+		</div>
+		
+		<script type="text/javascript">
+			let v=new Vue({
+				el:"#app",
+				data:{
+					scno:"",
+					scname:"",
+					stno:"",				
+					datas:[],
+					addcno:"",
+					addcname:"",
+					addtno:""
+				},
+				created:function(){
+					axios.post("http://localhost:8088/CourseManage/GetAllCourseInfo")
+					.then(res=>{
+						//console.log(res);
+						this.datas=res.data;
+					})
+				},
+				methods:{
+					seach(){//查询
+						//建传参的对象
+						let pa=new URLSearchParams();
+						pa.append("cno",this.scno);
+						pa.append("cname",this.scname);
+						pa.append("tno",this.stno);
+						
+						axios.post("http://localhost:8088/CourseManage/SeachCourseInfo",pa)
+						.then(res=>{
+							//console.log(res);
+							this.datas=res.data;
+						})
+					},
+					
+					del(val){//删除
+						if(confirm("你确定要删除吗？")){
+							axios.post("http://localhost:8088/CourseManage/DelCourseInfo?cno="+val)
+							.then(res=>{
+								console.log(res);
+								alert(res.data.del);
+								axios.post("http://localhost:8088/CourseManage/GetAllCourseInfo")
+								.then(res=>{
+									//console.log(res);
+									this.datas=res.data;
+								})								
+							})
+						}else{
+							alert("删除已取消。");
+						}
+					},
+					
+					add(){
+						var pa=new URLSearchParams();
+						
+						pa.append("cno",this.addcno);
+						pa.append("cname",this.addcname);
+						pa.append("tno",this.addtno);
+						
+						axios.post("http://localhost:8088/CourseManage/AddCourseInfo",pa)
+						.then(res=>{
+							//console.log(res.data);
+							//alert(res.data.add);
+							axios.post("http://localhost:8088/CourseManage/GetAllCourseInfo")
+							.then(res=>{
+								this.datas=res.data;
+								this.addcno="",
+								this.addcname="",
+								this.addtno=""
+							})
+						})
+					},
+					
+					updata(no,name,tno){
+						var upstu={
+							//"属性":值
+							"cno":no,
+							"cname":name,
+							"tno":tno,
+						};
+						//在页面之间传值， 把信息存入 sessionStorage 的对象stuitem 中
+						sessionStorage.setItem("stuitem",JSON.stringify(upstu));
+						location.href="UpCourseInfo.html";
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

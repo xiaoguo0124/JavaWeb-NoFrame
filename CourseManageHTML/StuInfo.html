@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>学生信息</title>
+		<link rel="stylesheet" type="text/css" href="css/Info.css"/>
+		<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		
+	</head>
+	<body>
+		
+		<div id="app">
+			<div id="top">
+				<h2>学生信息浏览</h2>
+				<h3>管理员</h3>
+				学号：<input v-model="sno" />
+				姓名：<input v-model="sname" />
+				性别：<input v-model="ssex" />
+				课程：<input v-model="scourse" />
+				<input type="button" value="查询" @click="seach()" />
+			</div>
+			
+			<table border="1" cellpadding="0" cellspacing="0" width="800px" align="center">
+				<tr>
+					<th>学号</th><th>姓名</th><th>性别</th><th>年龄</th><th>课程</th><th>操作</th>
+				</tr>
+				<tr v-for="value in datas">
+					<td>{{value.stuno}}</td>
+					<td>{{value.stuname}}</td>
+					<td>{{value.stusex}}</td>
+					<td>{{value.stuage}}</td>
+					<td>{{value.stucourse}}</td>
+					<td>
+						<input type="button" value="删除" @click="del(value.stuno)"/>
+						<input type="button" value="修改" @click="updata(value.stuno,value.stuname,value.stusex,value.stuage,value.stucourse)" />
+					</td>
+				</tr>
+				<tr>
+					<td><input v-model="addno"/></td>
+					<td><input v-model="addname"/></td>
+					<td><input v-model="addsex"/></td>
+					<td><input v-model="addage"/></td>
+					<td><input v-model="addcourse"/></td>
+					<td><input type="button" value="添加" @click="add()"/></td>
+				</tr>
+			</table>
+			
+			
+		</div>
+		
+		<script type="text/javascript">
+			let v=new Vue({
+				el:"#app",
+				data:{
+					sno:"",
+					sname:"",
+					ssex:"",
+					scouser:"",
+					datas:[],
+					addno:"",
+					addname:"",
+					addsex:"",
+					addage:"",
+					addcourse:""
+				},
+				created:function(){
+					axios.post("http://localhost:8088/CourseManage/GetAllStuInfo")
+					.then(res=>{
+						//console.log(res);
+						this.datas=res.data;
+					})
+				},
+				methods:{
+					seach(){//查询
+						//建传参的对象
+						let pa=new URLSearchParams();
+						pa.append("stuno",this.sno);
+						pa.append("stuname",this.sname);
+						pa.append("stusex",this.ssex);
+						pa.append("stucourse",this.scourse);
+						
+						axios.post("http://localhost:8088/CourseManage/SeachStuInfo",pa)
+						.then(res=>{
+							//console.log(res);
+							this.datas=res.data;
+						})
+					},
+					
+					del(val){//删除
+						if(confirm("你确定要删除吗？")){
+							axios.post("http://localhost:8088/CourseManage/DelStuInfo?stuno="+val)
+							.then(res=>{
+								console.log(res);
+								alert(res.data.del);
+								axios.post("http://localhost:8088/CourseManage/GetAllStuInfo")
+								.then(res=>{
+									//console.log(res);
+									this.datas=res.data;
+								})								
+							})
+						}else{
+							alert("删除已取消。");
+						}
+					},
+					
+					add(){
+						var pa=new URLSearchParams();
+						
+						pa.append("stuno",this.addno);
+						pa.append("stuname",this.addname);
+						pa.append("stusex",this.addsex);
+						pa.append("stuage",this.addage);
+						pa.append("stucourse",this.addcourse);
+						
+						axios.post("http://localhost:8088/CourseManage/AddStuInfo",pa)
+						.then(res=>{
+							//console.log(res.data);
+							alert(res.data.add);
+							axios.post("http://localhost:8088/CourseManage/GetAllStuInfo").then(
+							res=>{
+								this.datas=res.data;
+								this.addno="",
+								this.addname="",
+								this.addsex="",
+								this.addage="",
+								this.addcourse=""
+							})
+						})
+					},
+					
+					updata(no,name,sex,age,course){
+						var upstu={
+							//"属性":值
+							"stuno":no,
+							"stuname":name,
+							"stusex":sex,
+							"stuage":age,
+							"stucourse":course
+						};
+						//在页面之间传值， 吧信息存入 sessionStorage 的对象stuitem 中
+						sessionStorage.setItem("stuitem",JSON.stringify(upstu));
+						location.href="UpStuInfo.html";
+					}
+				}
+			})
+		</script>
+		
+	</body>
+</html>

@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title></title>
+		<script src="js/axios.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<!-- 引入样式 -->
+		<link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+		<!-- 引入组件库 -->
+		<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+		<script src="//unpkg.com/vue/dist/vue.js"></script>
+		<script src="//unpkg.com/element-ui@2.14.1/lib/index.js"></script>
+		<script src="js/vue-router.js" type="text/javascript" charset="utf-8"></script>
+		<style type="text/css">
+			.el-header {
+			    background-color: #B3C0D1;
+			    color: #333;
+			    line-height: 60px;
+			  }
+			  .el-aside {
+			    color: #333;
+			  }
+			  a{
+				  margin-left: 10px;
+			  }
+			  body{
+				  background-image: url(img/QQ截图20201211231637.png);
+				  background-size: cover;
+				  opacity: 0.8;
+			  }
+			  li{
+				  list-style: none;
+				  margin-top: 15px;
+				  width: 280px;
+			  }
+			  #zhucebut{
+				  margin-top: 50px;
+				  margin-left: 130px;
+			  }
+			  #uppwd{
+				  margin-top: 30px;
+				  margin-left: 130px;
+			  }
+			  input[type="text"]{
+				  height: 24px;
+				  border: 0;
+				  border-radius: 6px;
+			  }
+			  table{
+				  margin-bottom: 20px;
+			  }
+			  td{
+				  padding-right: 15px;
+			  }
+			  td:last-child{
+				  padding-left: 30px;
+			  }
+			  
+		</style>
+	</head>
+	<body>
+		<div id="app">
+		<el-container style="height: 600px; border: 1px solid #eee">
+		  <el-aside width="240px" style="background-color: rgb(238, 241, 246)">
+		    <el-menu :default-openeds="oplist">
+		      <el-submenu index="1">
+		        <template slot="title"><i class="el-icon-menu"></i>信息预览</template>
+		        <el-menu-item-group>
+		          <el-menu-item index="1-1" @click="CourseInfo()">课程信息</el-menu-item>
+		          <el-menu-item index="1-2" @click="StuInfo()">学生信息</el-menu-item>      
+		          <el-menu-item index="1-3" @click="StuScore()">学生成绩</el-menu-item>
+		      </el-submenu>
+		      <el-submenu index="2">
+		        <template slot="title"><i class="el-icon-folder-opened"></i>信息管理</template>
+		        <el-menu-item-group>
+				  <el-menu-item index="2-1" @click="ManageCourseInfo()">课程管理</el-menu-item>
+		          <el-menu-item index="2-2" @click="ManageStuInfo()">学生管理</el-menu-item>
+		          <el-menu-item index="2-3" @click="ManageStuScore()">成绩管理</el-menu-item>
+		        </el-menu-item-group>
+		      </el-submenu>
+			  <el-submenu index="3">
+			    <template slot="title"><i class="el-icon-search"></i>信息查询</template>
+			    <el-menu-item-group>
+			      <el-menu-item index="3-1" @click="SeachCourseInfo()">查询课程信息</el-menu-item>
+			      <el-menu-item index="3-2" @click="SeachStuInfo()">查询学生信息</el-menu-item>      
+			      <el-menu-item index="3-3" @click="SeachStuScore()">查询学生成绩</el-menu-item>
+			  </el-submenu>
+			  <el-submenu index="4">
+			    <template slot="title"><i class="el-icon-folder-add"></i>信息添加</template>
+			    <el-menu-item-group>
+			      <el-menu-item index="4-1" @click="AddCourseInfo()">添加课程信息</el-menu-item>
+			      <el-menu-item index="4-2" @click="AddStuInfo()">添加学生信息</el-menu-item>      
+			      <el-menu-item index="4-3" @click="AddStuScore()">添加学生成绩</el-menu-item>
+			  </el-submenu>
+		      <el-submenu index="5">
+		        <template slot="title"><i class="el-icon-setting"></i>管理员设置</template>
+		        <el-menu-item-group>
+		          <el-menu-item index="5-1" @click="UpPwd()">修改密码</el-menu-item>
+		          <el-menu-item index="5-2" @click="AddAdmin()">添加管理员</el-menu-item>
+		        </el-menu-item-group>
+		      </el-submenu>
+		    </el-menu>
+		  </el-aside>
+		  
+		  <el-container>
+		    <el-header style="text-align: right; font-size: 16px">
+		      <el-dropdown>
+		        <i class="el-icon-setting" style="margin-right:20px"></i>
+		        <el-dropdown-menu slot="dropdown">
+		          <el-dropdown-item></el-dropdown-item>
+		        </el-dropdown-menu>
+		      </el-dropdown>
+		      <span>欢迎你使用课程管理系统</span>
+			  <a href="Login.html">退出系统</a>
+		    </el-header>
+		    
+		    <el-main>
+				<router-view></router-view>
+		    </el-main>
+		  </el-container>
+		</el-container>
+		</div>
+		
+		
+		
+		<template id="stuinfo">
+			<div id="">
+				<el-table :data="datas">
+				  <el-table-column prop="stuno" label="学号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuname" label="姓名" width="120">
+				  </el-table-column>
+				  <el-table-column prop="stusex" label="性别" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuage" label="年龄" width="120">
+				  </el-table-column>
+				  <el-table-column prop="stucourse" label="课程" width="140">
+				  </el-table-column>
+				</el-table>
+			</div>
+		</template>
+		<template id="courseinfo">
+			<div id="">
+				<el-table :data="datas">
+				  <el-table-column prop="cno" label="课程编号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="cname" label="课程名称" width="140">
+				  </el-table-column>
+				  <el-table-column prop="tno" label="教师编号" width="140">
+				  </el-table-column>
+				</el-table>
+			</div>		
+		</template>
+		<template id="stuscore">
+			<div id="">
+				<el-table :data="datas">
+				  <el-table-column prop="stuno" label="学号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="cname" label="课程名称" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuscore" label="成绩" width="140">
+				  </el-table-column>
+				</el-table>
+			</div>		
+		</template>
+		
+		
+		
+		<template id="managestuscore">
+			<div id="">
+				<el-table :data="datas">
+				  <el-table-column prop="stuno" label="学号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="cname" label="课程名称" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuscore" label="成绩" width="140">
+				  </el-table-column>
+				  <el-table-column label="删除" width="70">
+				  		<template slot-scope="scope">
+				  			<el-button type="danger" @click="DelStuScore(scope.row)" icon="el-icon-delete" circle></el-button>
+				  		</template>
+				  </el-table-column>
+				  <el-table-column label="修改">
+				  		<template slot-scope="scope">
+				  			<el-button type="primary" @click="UpStuScore(scope.row)" icon="el-icon-edit" circle></el-button>
+				  		</template>
+				  </el-table-column>
+				</el-table>
+			</div>		
+		</template>
+		<template id="managestuinfo">
+			<div id="">
+				<el-table :data="datas">
+				  <el-table-column prop="stuno" label="学号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuname" label="姓名" width="120">
+				  </el-table-column>
+				  <el-table-column prop="stusex" label="性别" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuage" label="年龄" width="120">
+				  </el-table-column>
+				  <el-table-column prop="stucourse" label="课程" width="140">
+				  </el-table-column>
+				  <el-table-column label="删除" width="70">
+					  <template slot-scope="scope">
+					  		<el-button type="danger" @click="DelStuInfo(scope.row)" icon="el-icon-delete" circle></el-button>
+					        </template>
+				  </el-table-column>
+				  <el-table-column label="修改">
+						<template slot-scope="scope">
+							<el-button type="primary" @click="UpStuInfo(scope.row)" icon="el-icon-edit" circle></el-button>
+							</template>
+				  </el-table-column>
+				</el-table>
+				<el-pagination background align="right" layout="prev, pager, next" :total="1000"></el-pagination>
+			</div>
+		</template>
+		<template id="managecourseinfo">
+			<div id="">
+				<el-table :data="datas">
+				  <el-table-column prop="cno" label="课程编号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="cname" label="课程名称" width="140">
+				  </el-table-column>
+				  <el-table-column prop="tno" label="教师编号" width="140">
+				  </el-table-column>
+				  <el-table-column label="删除" width="70">
+				  		<template slot-scope="scope">
+				  			<el-button type="danger" @click="DelCourseInfo(scope.row)" icon="el-icon-delete" circle></el-button>
+				  		</template>
+				  </el-table-column>
+				  <el-table-column label="修改">
+				  		<template slot-scope="scope">
+				  			 <el-button type="primary" @click="UpCourseInfo(scope.row)" icon="el-icon-edit" circle></el-button>
+				  		</template>
+				  </el-table-column>
+				</el-table>
+			</div>		
+		</template>
+		
+		
+		
+		<template id="seachstuinfo">
+			<div id="">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td>学号：<input type="text" v-model="sno" /></td>
+						<td>姓名：<input type="text" v-model="sname" /></td>
+						<td>性别：<input type="text" v-model="ssex" /></td>
+						<td>课程：<input type="text" v-model="scourse" /></td>
+						<td><el-button type="success" @click="Seachstuinfo" icon="el-icon-search" circle></el-button></td>
+					</tr>
+				</table>
+				<el-table :data="datas">
+				  <el-table-column prop="stuno" label="学号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuname" label="姓名" width="120">
+				  </el-table-column>
+				  <el-table-column prop="stusex" label="性别" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuage" label="年龄" width="120">
+				  </el-table-column>
+				  <el-table-column prop="stucourse" label="课程" width="140">
+				  </el-table-column>
+				</el-table>
+			</div>
+		</template>
+		<template id="seachcourseinfo">
+			<div id="">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td>课程编号：<input type="text" v-model="scno" /></td>
+						<td>课程名称：<input type="text" v-model="scname" /></td>
+						<td>教师编号：<input type="text" v-model="stno" /></td>
+						<td><el-button type="success" @click="Seachcourseinfo" icon="el-icon-search" circle></el-button></td>
+					</tr>
+				</table>
+				<el-table :data="datas">
+				  <el-table-column prop="cno" label="课程编号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="cname" label="课程名称" width="140">
+				  </el-table-column>
+				  <el-table-column prop="tno" label="教师编号" width="140">
+				  </el-table-column>
+				</el-table>
+			</div>		
+		</template>
+		<template id="seachstuscore">
+			<div id="">
+				<table border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td>学号：<input type="text" v-model="sno" /></td>
+						<td>课程名称：<input type="text" v-model="cname"/></td>
+						<td>成绩：<input type="text" v-model="score"/></td>
+						<td><el-button type="success" @click="Seachstuscore" icon="el-icon-search" circle></el-button></td>
+					</tr>
+				</table>
+				<el-table :data="datas">
+				  <el-table-column prop="stuno" label="学号" width="140">
+				  </el-table-column>
+				  <el-table-column prop="cname" label="课程名称" width="140">
+				  </el-table-column>
+				  <el-table-column prop="stuscore" label="成绩" width="140">
+				  </el-table-column>
+				</el-table>
+			</div>		
+		</template>
+		
+		
+		
+		<template id="addstuinfo">
+			<div id="">
+				<ul>
+					学号：
+					<li><el-input placeholder="请输入" v-model="addno" clearable></el-input></li>
+					<br/><br />姓名：
+					<li><el-input placeholder="请输入内容" v-model="addname" clearable></el-input></li>
+					<br/><br />性别：
+					<li><el-input placeholder="请输入内容" v-model="addsex" clearable></el-input></li>
+					<br/><br />年龄：
+					<li><el-input placeholder="请输入内容" v-model="addage" clearable></el-input></li>
+					<br/><br />课程：
+					<li><el-input placeholder="请输入内容" v-model="addcourse" clearable></el-input></li>
+				</ul>
+				<el-button id="uppwd" type="success" @click="Addstuinfo()">添加</el-button>
+			</div>
+		</template>
+		<template id="addcourseinfo">
+			<div id="">
+				<ul>
+					课程编号：
+					<li><el-input placeholder="请输入" v-model="addcno" clearable></el-input></li>
+					<br/><br />课程名称：
+					<li><el-input placeholder="请输入内容" v-model="addcname" clearable></el-input></li>
+					<br/><br />教师编号：
+					<li><el-input placeholder="请输入内容" v-model="addtno" clearable></el-input></li>
+				</ul>
+				<el-button id="uppwd" type="success" @click="Addcourseinfo()">添加</el-button>
+			</div>		
+		</template>
+		<template id="addstuscore">
+			<div id="">
+				<ul>
+					学号：
+					<li><el-input placeholder="请输入" v-model="addsno" clearable></el-input></li>
+					<br/><br />课程名称：
+					<li><el-input placeholder="请输入内容" v-model="addcname" clearable></el-input></li>
+					<br/><br />成绩：
+					<li><el-input placeholder="请输入内容" v-model="addscore" clearable></el-input></li>
+				</ul>
+				<el-button id="uppwd" type="success" @click="Addstuscore()">添加</el-button>
+			</div>
+		</template>
+		
+		
+		
+		<template id="uppwd">
+			<div id="">
+				<ul>
+					账号：
+					<li><el-input placeholder="请输入账号" v-model="user" clearable></el-input></li>
+					<br/><br />旧密码：
+					<li><el-input placeholder="请输入内容" v-model="oldpwd" clearable></el-input></li>
+					<br/><br />新密码：
+					<li><el-input placeholder="请输入内容" v-model="newpwd" clearable></el-input></li>
+				</ul>
+				<el-button id="uppwd" type="success" plain @click="UpAdminPwd()">提交</el-button>
+			</div>
+		</template>
+		<template id="addadmin">
+			<div id="admin">
+				<ul>
+					账号：
+					<li><el-input placeholder="请输入内容" v-model="input" clearable></el-input>
+					</li>
+					<br/><br />密码：
+					<li><el-input placeholder="请输入内容" v-model="upwd1" clearable></el-input></li>
+					<br/><br />确认密码：
+					<li><el-input placeholder="请输入内容" v-model="upwd2" clearable></el-input></li>
+				</ul>
+				<el-button id="zhucebut" type="success" @click="AdminZhuCe()" round>注册管理员</el-button>
+			</div>
+		</template>
+		
+		<script type="text/javascript">
+			    // 路由表
+			    const router = new VueRouter({
+			      routes: [
+					{
+			          path: '/managestuinfo', // 路由的路径
+			          name: 'managestuinfo',  // 路由名称，可选属性，定义后可以用其实现跳转
+			          component: { // 路由显示的组件
+			            template: '#managestuinfo',// 组件模板
+						data(){
+							return{
+								datas:[],
+							}
+						},
+						created:function(){
+								axios.post("http://localhost:8088/CourseManage/GetAllStuInfo")
+								.then(res=>{
+									this.datas=res.data;
+									})
+						},
+						methods:{
+							DelStuInfo(val){
+								//console.log(val)
+								if(confirm("你确定要删除吗？")){
+									axios.post("http://localhost:8088/CourseManage/DelStuInfo?stuno="+val.stuno)
+									.then(res=>{
+										console.log(res);
+										alert(res.data.del);
+										axios.post("http://localhost:8088/CourseManage/GetAllStuInfo")
+										.then(res=>{
+											//console.log(res);
+											this.datas=res.data;
+										})								
+									})
+								}else{
+									alert("删除已取消。");
+								}
+							},
+							UpStuInfo(val){
+								var upstu={
+									//"属性":值
+									"stuno":val.stuno,
+									"stuname":val.stuname,
+									"stusex":val.stusex,
+									"stuage":val.stuage,
+									"stucourse":val.stucourse
+								};
+								//在页面之间传值， 吧信息存入 sessionStorage 的对象stuitem 中
+								sessionStorage.setItem("stuitem",JSON.stringify(upstu));
+								location.href="UpStuInfo.html";
+							}
+						 }
+						}
+			        },
+					
+					{
+					  path: '/managecourseinfo',
+					  name: 'managecourseinfo',
+					  component: {
+					    template: '#managecourseinfo',
+						data(){
+							return{
+								datas:[]
+							}
+						},
+						created:function(){
+							axios.post("http://localhost:8088/CourseManage/GetAllCourseInfo")
+							.then(res=>{
+								this.datas=res.data;
+								})
+						},
+						methods:{
+							DelCourseInfo(val){//删除
+								if(confirm("你确定要删除吗？")){
+									axios.post("http://localhost:8088/CourseManage/DelCourseInfo?cno="+val.cno)
+									.then(res=>{
+										console.log(res);
+										alert(res.data.del);
+										axios.post("http://localhost:8088/CourseManage/GetAllCourseInfo")
+										.then(res=>{
+											//console.log(res);
+											this.datas=res.data;
+										})								
+									})
+								}else{
+									alert("删除已取消。");
+								}
+							},
+							UpCourseInfo(val){
+								var upstu={
+									//"属性":值
+									"cno":val.cno,
+									"cname":val.cname,
+									"tno":val.tno,
+								};
+								//在页面之间传值， 吧信息存入 sessionStorage 的对象stuitem 中
+								sessionStorage.setItem("stuitem",JSON.stringify(upstu));
+								location.href="UpCourseInfo.html";
+							}
+							
+						}
+					  }
+					},
+					
+					{
+					  path: '/managestuscore',
+					  name: 'managestuscore',
+					  component: {
+					    template: '#managestuscore',
+						data(){
+							return{
+								datas:[]
+							}
+						},
+						created:function(){
+							axios.post("http://localhost:8088/CourseManage/GetAllStuScore")
+							.then(res=>{
+								this.datas=res.data;
+								})
+						},
+						methods:{
+							DelStuScore(val){//删除
+								if(confirm("你确定要删除吗？")){
+									var pa=new URLSearchParams();
+									
+									pa.append("stuno",val.stuno);
+									pa.append("cname",val.cname);
+									pa.append("stuscore",val.stuscore);
+									
+									axios.post("http://localhost:8088/CourseManage/DelStuScore",pa)
+									.then(res=>{
+										console.log(res);
+										alert(res.data.del);
+										axios.post("http://localhost:8088/CourseManage/GetAllStuScore")
+										.then(res=>{
+											//console.log(res);
+											this.datas=res.data;
+										})								
+									})
+								}else{
+									alert("删除已取消。");
+								}
+							},
+							UpStuScore(val){
+								var upstu={
+									//"属性":值
+									"stuno":val.stuno,
+									"cname":val.cname,
+									"stuscore":val.stuscore,
+								};
+								//在页面之间传值， 吧信息存入 sessionStorage 的对象stuitem 中
+								sessionStorage.setItem("stuitem",JSON.stringify(upstu));
+								location.href="UpStuScore.html";
+							}
+						}
+					  }
+					},
+					
+			        {
+			          path: '/courseinfo',
+			          name: 'courseinfo',
+			          component: {
+			            template: '#courseinfo',
+						data(){
+							return{
+								datas:[]
+							}
+						},
+						created:function(){
+							axios.post("http://localhost:8088/CourseManage/GetAllCourseInfo")
+							.then(res=>{
+								//console.log(res);
+								this.datas=res.data;
+							})
+						}
+			          }
+			        },
+					
+					{
+					  path: '/stuinfo',
+					  name: 'stuinfo',
+					  component: {
+					    template: '#stuinfo',
+						data(){
+							return{
+								datas:[]
+							}
+						},
+						created:function(){
+							axios.post("http://localhost:8088/CourseManage/GetAllStuInfo")
+							.then(res=>{
+								//console.log(res);
+								this.datas=res.data;
+							})
+						}
+					  }
+					},
+					{
+					  path: '/stuscore',
+					  name: 'stuscore',
+					  component: {
+					    template: '#stuscore',
+						data(){
+							return {
+								datas:[]
+							}
+						},
+						created:function(){
+							axios.post("http://localhost:8088/CourseManage/GetAllStuScore")
+							.then(res=>{
+								//console.log(res);
+								this.datas=res.data;
+							})
+						}
+					  }
+					},
+					
+					{
+					  path: '/addstuinfo',
+					  name: 'addstuinfo',
+					  component:{
+					    template: '#addstuinfo',
+						data(){
+							return{
+								input:'',
+								addno:"",
+								addname:"",
+								addsex:"",
+								addage:"",
+								addcourse:""
+							}
+						},
+						methods:{
+							Addstuinfo(){
+								var pa=new URLSearchParams();
+								
+								pa.append("stuno",this.addno);
+								pa.append("stuname",this.addname);
+								pa.append("stusex",this.addsex);
+								pa.append("stuage",this.addage);
+								pa.append("stucourse",this.addcourse);
+								
+								axios.post("http://localhost:8088/CourseManage/AddStuInfo",pa)
+								.then(res=>{
+									//console.log(res.data);
+									if (res.data.add=="OK") {
+										alert("添加成功");
+										this.addno="";
+										this.addname="";
+										this.addsex="";
+										this.addage="";
+										this.addcourse="";
+									} else{
+										alert(res.data.add);
+									}
+									
+								})
+							}
+						}
+					  }
+					},
+					
+					{
+					  path: '/addstuscore',
+					  name: 'addstuscore',
+					  component:{
+					    template: '#addstuscore',
+						data(){
+							return{
+								input:'',
+								addsno:"",
+								addcname:"",
+								addscore:""
+							}
+						},
+						methods:{
+							Addstuscore(){
+								var pa=new URLSearchParams();
+								
+								pa.append("stuno",this.addsno);
+								pa.append("cname",this.addcname);
+								pa.append("stuscore",this.addscore);
+								
+								axios.post("http://localhost:8088/CourseManage/AddStuScore",pa)
+								.then(res=>{
+									//console.log(res.data);
+									if (res.data.add=="OK") {
+										this.addsno="";
+										this.addcname="";
+										this.addscore="";
+									} else{
+										alert(res.data.add);
+									}
+									
+								})
+							}
+						}
+					  }
+					},
+					
+					{
+					  path: '/addcourseinfo',
+					  name: 'addcourseinfo',
+					  component:{
+					    template: '#addcourseinfo',
+						data(){
+							return{
+								input:'',
+								addcno:"",
+								addcname:"",
+								addtno:""
+							}
+						},
+						methods:{
+							Addcourseinfo(){
+								var pa=new URLSearchParams();
+								
+								pa.append("cno",this.addcno);
+								pa.append("cname",this.addcname);
+								pa.append("tno",this.addtno);
+								
+								axios.post("http://localhost:8088/CourseManage/AddCourseInfo",pa)
+								.then(res=>{
+									//console.log(res.data);
+									if (res.data.add=="OK") {
+										this.addcno="";
+										this.addcname="";
+										this.addtno="";
+									} else{
+										alert(res.data.add);
+									}
+								})
+							}
+						}
+					  }
+					},
+					
+					{
+						path:"/seachstuinfo",
+						name:"seachstuinfo",
+						component:{
+							template:"#seachstuinfo",
+							data(){
+								return{
+									sno:"",
+									sname:"",
+									ssex:"",
+									scouser:"",
+									datas:[],
+								}
+							},
+							methods:{
+								Seachstuinfo(){
+									//建传参的对象
+									let pa=new URLSearchParams();
+									pa.append("stuno",this.sno);
+									pa.append("stuname",this.sname);
+									pa.append("stusex",this.ssex);
+									pa.append("stucourse",this.scourse);
+									
+									axios.post("http://localhost:8088/CourseManage/SeachStuInfo",pa)
+									.then(res=>{
+										//console.log(res);
+										this.datas=res.data;
+									})
+								}
+							}
+						}
+					},
+					
+					{
+						path:"/seachcourseinfo",
+						name:"seachcourseinfo",
+						component:{
+							template:"#seachcourseinfo",
+							data(){
+								return{
+									scno:"",
+									scname:"",
+									stno:"",
+									datas:[],
+								}
+							},
+							methods:{
+								Seachcourseinfo(){
+									let pa=new URLSearchParams();
+									pa.append("cno",this.scno);
+									pa.append("cname",this.scname);
+									pa.append("tno",this.stno);
+									
+									axios.post("http://localhost:8088/CourseManage/SeachCourseInfo",pa)
+									.then(res=>{
+										//console.log(res);
+										this.datas=res.data;
+									})
+								}
+							}
+						}
+					},
+					
+					{
+						path:"/seachstuscore",
+						name:"seachstuscore",
+						component:{
+							template:"#seachstuscore",
+							data(){
+								return{
+									sno:"",
+									cname:"",
+									score:"",
+									datas:[],
+								}
+							},
+							methods:{
+								Seachstuscore(){
+									let pa=new URLSearchParams();
+									pa.append("stuno",this.sno);
+									pa.append("cname",this.cname);
+									pa.append("stuscore",this.score);
+									
+									axios.post("http://localhost:8088/CourseManage/SeachStuScore",pa)
+									.then(res=>{
+										//console.log(res);
+										this.datas=res.data;
+									})
+								}
+							}
+						}
+					},
+					
+					
+					{
+					  path: '/uppwd',
+					  name: 'uppwd',
+					  component: {
+					    template: '#uppwd',
+						data(){
+							return{
+								input:'',
+								user:"",
+								oldpwd:"",
+								newpwd:""
+							}
+						},
+						methods:{
+							UpAdminPwd(){
+								if(this.upwd1==this.upwd2){
+									var pwd=this.upwd1;
+									var da=new URLSearchParams();
+									
+									da.append("user",this.user);
+									da.append("upwd",pwd);
+									axios.post("http://localhost:8088/CourseManage/UpAdmin",da)
+									.then(res=>{
+										console.log(res);
+										if(res.data.zhuce=="OK"){
+											alert("修改成功");
+										}else{
+											alert("修改失败");
+										}
+									})
+								}else{
+									alert("密码错误，请重新输入");
+								}
+							}
+						}
+					  }
+					},
+					
+					{
+					  path: '/addadmin',
+					  name: 'addadmin',
+					  component:{
+					    template: '#addadmin',
+						data(){
+							return{
+								input:'',
+								user:"",
+								upwd1:"",
+								upwd2:""
+							}
+						},
+						methods:{
+							AdminZhuCe(){
+								if (this.upwd2!="" && this.user!="" && this.upwd1!="") {
+									if(this.upwd1==this.upwd2 ){
+										var pwd=this.upwd1;
+										var da=new URLSearchParams();
+										
+										da.append("user",this.user);
+										da.append("upwd",pwd);
+										axios.post("http://localhost:8088/CourseManage/AddAdmin",da)
+										.then(res=>{
+											console.log(res);
+											if(res.data.zhuce=="OK"){
+												alert("注册成功");
+											}else{
+												alert("注册失败");
+											}
+										})
+									}else{
+										alert("密码不一致，请重新输入");
+									}
+								} else{
+									alert("不能有空值。");
+								}
+							}
+						}
+					  }
+					},
+								 
+			      ]
+			    })
+			
+			var v=new Vue({
+				el:"#app",
+				data:{
+					datas:[],
+					oplist:['1','2'],
+					flag:false
+				},
+				router,
+				methods:{
+					CourseInfo(){
+						  this.$router.push("/courseinfo");
+					},
+					StuInfo(){
+						  this.$router.push("/stuinfo");
+					},
+					StuScore(){
+						  this.$router.push("/stuscore");
+					},
+					
+					ManageStuInfo(){
+						  // 直接跳转路由地址，参数直接带在路径中。
+						  this.$router.push("/managestuinfo");
+					},
+					ManageCourseInfo(){
+						  // 直接跳转路由地址，参数直接带在路径中。
+						  this.$router.push("/managecourseinfo");
+					},
+					ManageStuScore(){
+						  // 直接跳转路由地址，参数直接带在路径中。
+						  this.$router.push("/managestuscore");
+					},
+					
+					SeachCourseInfo(){
+						  this.$router.push("/seachcourseinfo");
+					},
+					SeachStuInfo(){
+						  this.$router.push("/seachstuinfo");
+					},
+					SeachStuScore(){
+						  this.$router.push("/seachstuscore");
+					},
+					
+					AddCourseInfo(){
+						  this.$router.push("/addcourseinfo");
+					},
+					AddStuInfo(){
+						  this.$router.push("/addstuinfo");
+					},
+					AddStuScore(){
+						  this.$router.push("/addstuscore");
+					},
+					
+					UpPwd(){
+						this.$router.push("/uppwd");
+					},
+					AddAdmin(){
+						this.$router.push("/addadmin");
+					}
+				}
+			})
+		</script>
+		
+		
+	</body>
+</html>
